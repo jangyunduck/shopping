@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.study.mapper.CartMapper">
+
+
+	<!-- 카트 추가 -->
+	<insert id="addCart">
+	
+		insert into mall_cart(cartId, memberrId, bookId, bookCount)
+		values(mall_cart_seq.NEXTVAL, #{memberrId}, #{bookId}, #{bookCount}) <!-- cartId이 자리에 mall_cart_seq 삽입하면 오류가 난다.-->
+	
+	</insert>
+	
+	
+	<!-- 카트 삭제 -->
+	<delete id="deleteCart">
+	
+		delete from mall_cart where cartId = #{cartId}
+	
+	</delete>
+	
+	<!-- 카트 수량 수정 -->
+	<update id="modifyCount">
+	
+		update mall_cart set bookCount=#{bookCount} where cartId = #{cartId}
+	
+	</update>
+	
+	
+	<!-- 카트 목록 -->
+	<select id="getCart" resultType="com.study.model.CartDTO">
+	
+		select a.cartId, a.memberrId, a.bookId, a.bookCount, b.bookName, b.bookPrice, b.bookDiscount
+		from mall_cart a left outer join mall_book b on a.bookId = b.bookId
+		where memberrId = #{memberrId}	
+	
+	</select>
+	
+	<!-- 카트 확인 -->
+	<select id="checkCart" resultType="com.study.model.CartDTO">
+	
+		select * from mall_cart 
+		where memberrId = #{memberrId} and bookId = #{bookId}
+	
+	</select>
+	
+	<!-- 카트제거(주문) -->
+	<delete id="deleteOrderCart">
+	
+		delete from mall_cart where memberrId = #{memberrId} and bookId = #{bookId}
+	
+	</delete>
+	
+	
+  </mapper>

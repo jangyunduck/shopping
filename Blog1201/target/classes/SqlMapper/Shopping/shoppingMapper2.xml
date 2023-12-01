@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+ <mapper namespace="com.mingyu.dao.BbsDAO">         <!--    #{} 이것 get메소드를 불러오는것임 -->  
+ 
+
+	
+	
+<!-- 	<insert id="insert">
+	
+	
+	  자동 씨퀀스 사용 keyProperty 값음 테이블 컬럼 이름과 같아야 한다.
+		<selectKey keyProperty="bid_tb" resultType="int" order="BEFORE" >
+		SELECT TEST_SEQ.NEXTVAL FROM DUAL
+	    </selectKey>
+		
+		
+		
+	insert into TBL_BOARD(BID_TB,SUBJECT,CONTENT,WRITER) values (#{bid_tb}, #{subject}, #{content}, #{writer})
+	</insert> -->
+	
+	<insert id="insert">
+	 insert into TBL_BOARD(BID_TB,SUBJECT,CONTENT,WRITER) values (TEST_SEQ.NEXTVAL, #{subject}, #{content}, #{writer})
+	</insert> 
+	
+	
+	<select id="read" resultType="com.mingyu.vo.BbsVo" parameterType="int">
+	
+	select BID_TB, SUBJECT, CONTENT, WRITER, REGDATE, HIT 
+		from TBL_BOARD
+	 		where  BID_TB = #{bid_tb}
+	
+	</select>
+	
+	
+	
+    <update id="update" >
+	
+	update TBL_BOARD set SUBJECT = #{subject}, content = #{content} where BID_TB = #{bid_tb}
+	
+	</update> 
+	
+	
+	<!-- <update id="update" parameterType="java.util.HashMap">
+	
+	update TBL_BOARD set SUBJECT = #{subject}, content = #{content} where BID_TB = #{bid_tb}
+	
+	</update> -->
+	
+	
+	
+	
+	
+	<delete id="delete">
+	
+	delete from TBL_BOARD  where bid_tb = #{bid_tb}
+	
+	</delete>
+
+	
+	<select id="listPage" resultType="com.mingyu.vo.BbsVo">
+	<![CDATA[
+	SELECT *
+	FROM
+    (
+        SELECT /*+ INDEX(T1 PK1) */
+            ROWNUM AS RNUM, T1.*
+        FROM
+            tbl_board T1
+        WHERE
+            ROWNUM <= #{page}+10 ORDER BY bid_tb desc
+    )
+	WHERE
+    #{page} <= RNUM
+
+	]]>
+	</select> 
+	
+	
+		<select id="listCriteria" resultType="com.mingyu.vo.BbsVo">
+	<![CDATA[
+	SELECT *
+	FROM
+    (
+        SELECT /*+ INDEX(T1 PK1) */
+            ROWNUM AS RNUM, T1.*
+        FROM
+            tbl_board T1
+        WHERE
+            ROWNUM <= #{endPage} ORDER BY bid_tb desc
+    )
+	WHERE
+    #{strPage} <= RNUM
+
+	]]>
+	</select> 
+	
+	
+	<select id="totalData" resultType="int">
+		select count(*) from tbl_board
+	</select>
+	
+	
+	<select id="countData" resultType="int">
+		<![CDATA[
+		select count(bid_tb) from tbl_board where bid_tb >0
+		]]>
+	</select>
+	
+	
+<!-- 	<select id="list" resultMap="selectMap">
+	<![CDATA[
+	select *  from TBL_BOARD where BID_TB > 0 order by regdate desc
+	]]>
+	</select> -->
+	
+	<resultMap type="map" id="selectMap">
+	
+<!-- 		<result column="BID_TB" property="bid_tb"/>
+        <result column="SUBJECT" property="subject"/>
+        <result column="CONTENT" property="content"/>
+        <result column="WRITER" property="writer"/>
+        <result column="REGDATE" property="studentEmail"/>
+        <result column="HIT" property="hit"/> 
+	컬럼명과 객체명 같으면 주석처리 가능 -->
+	</resultMap>
+
+
+
+
+		<select id="listFind" resultType="com.mingyu.vo.BbsVo">
+			<![CDATA[
+				SELECT * FROM
+					    ( SELECT A.*,  ROWNUM AS RNUM
+					        FROM ( SELECT *  FROM
+					                    tbl_board where  1=1
+					                     ]]>
+					                      <include refid="findSQL"></include>
+					                     <![CDATA[
+					                ORDER BY bid_tb desc ) A
+					        WHERE ROWNUM <=  #{endPage}) 
+					    WHERE  RNUM >= #{strPage}
+		 ]]>
+		</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<select id="findCountData" resultType="int">
+		
+			<![CDATA[
+		      select count(bid_tb) from tbl_board where bid_tb >0
+			]]>
+			
+			  <include refid="findSQL"></include>
+			
+		</select>
+		
+		
+		
+		<sql id="findSQL">
+				   <if test = "findType != null">
+		                <if test = "findType == 'S'.toString()">                <!-- .toString은 S가 스트링타입이라는것을 알려주기 위해   -->
+		                     and subject like '%'||#{keyword}||'%'
+		            	</if>
+		            	
+		            	<if test = "findType == 'C'.toString()">               
+		                     and content like '%'||#{keyword}||'%'
+		            	</if>
+		            	
+		            	<if test = "findType == 'W'.toString()">               
+		                     and writer like '%'||#{keyword}||'%'
+		            	</if>
+		            	
+		            	<if test = "findType == 'SC'.toString()">              
+		                     and (subject like '%'||#{keyword}||'%' OR content like '%'||#{keyword}||'%')
+		            	</if>
+		            	
+		            	
+		            	<if test = "findType == 'CW'.toString()">              
+		                     and (content like '%'||#{keyword}||'%' OR writer like '%'||#{keyword}||'%')     
+		            	</if>
+		            	
+		            	<if test = "findType == 'SCW'.toString()">              
+		                     and (subject like '%'||#{keyword}||'%' OR content like '%'||#{keyword}||'%' OR writer like '%'||#{keyword}||'%')     
+		            	</if>
+
+		        </if>
+		
+		</sql>
+
+
+	
+</mapper>

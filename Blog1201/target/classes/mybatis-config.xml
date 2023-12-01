@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+
+   
+	<!-- bbsMapper.xml 에서 리턴타입 패키지명 다 적을 필요없이 파일 이름만 사용하면 가능하게 설정 -->
+	
+	
+	<settings> <!-- Mybatis에 Null 값을 넣기 위한 설정  -->
+    <setting name="cacheEnabled" value="false" /> 
+    <setting name="jdbcTypeForNull" value="NULL" /> 
+    </settings>
+
+	 <typeAliases>
+    	<package name="com.**"/>
+    </typeAliases>
+    
+	
+
+
+
+</configuration>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.mapper.MemberrMapper">
+	<insert id="memberJoin">
+		insert into mall_MEMBER values(#{memberrId}, #{memberrPw}, #{memberrName}, #{memberrMail}, #{memberrAddr1}, #{memberrAddr2}, #{memberrAddr3}, 0, sysdate, 100000, 5000)
+	</insert>
+	
+	<select id="idCheck" resultType="int">
+	
+	select count(*) from mall_MEMBER where memberrId = #{memberrId}
+	
+	</select>
+	
+	<!-- 로그인 -->
+	<select id="memberLogin" resultType="com.study.model.MemberrVO">
+	<!-- SELECT memberrId, memberrName, adminCk, money, point FROM mall_MEMBER 
+	where memberrId = #{memberrId} AND memberrPw = #{memberrPw} -->
+	SELECT memberrId, memberrPw, memberrName, adminCk, money, point FROM mall_MEMBER 
+	where memberrId = #{memberrId}
+	</select>
+	
+	<!-- 주문자 정보 -->
+  	<select id="getMemberInfo" resultType="com.study.model.MemberrVO"><!-- resultType의 경로를 잘 보고 일치시켜야 한다. -->
+  	
+  		SELECT memberrId, memberrName, memberrMail, memberrAddr1, memberrAddr2, memberrAddr3, money, point 
+  		FROM mall_MEMBER 
+  		WHERE memberrId = #{memberrId}
+  	
+  	</select>
+</mapper>
+
+

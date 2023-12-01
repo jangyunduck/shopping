@@ -1,0 +1,93 @@
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.study.mapper.OrderMapper">
+
+
+		<!-- 주문 상품 정보 -->
+	<select id="getGoodsInfo" resultType="com.study.model.OrderPageItemDTO">
+	
+		select bookId, bookName, bookPrice, bookDiscount
+		from mall_book where bookId = #{bookId}	
+	
+	</select>
+	
+	<select id="getOrderInfo" resultType="com.study.model.OrderItemDTO">
+	
+		select bookId, bookPrice, bookDiscount
+		from mall_book where bookId = #{bookId}
+	
+	</select>
+	
+	<!-- 주문 테이블 등록 -->
+	<insert id="enrollOrder">
+	
+		insert into mall_order(orderId, addressee, memberrId, memberrAddr1, memberrAddr2, memberrAddr3, orderState, deliveryCost, usePoint)
+    	values(mall_order_seq.NEXTVAL,#{addressee}, #{memberrId}, #{memberrAddr1}, #{memberrAddr2}, #{memberrAddr3}, '배송준비', #{deliveryCost}, #{usePoint})
+	
+	</insert>
+	
+	
+	
+	
+	
+	
+	<select id="enrollOrderItemSeq" resultType="int">
+	
+	
+	select MALL_ORDER_SEQ.NEXTVAL from dual
+	
+	
+	</select>
+
+	
+	
+	
+	<!-- 주문 아이템 테이블 등록 -->
+	<insert id="enrollOrderItem">
+		
+
+		
+		insert into mall_orderItem(orderItemId, orderId , bookId, bookCount, bookPrice, bookDiscount, savePoint)
+		values(mall_orderItem_seq.NEXTVAL, #{orderId} , #{bookId}, #{bookCount}, #{bookPrice}, #{bookDiscount}, #{savePoint})
+	
+	</insert>
+	
+	<!-- 주문 금액 차감 -->
+	<update id="deductMoney">
+	
+		update mall_MEMBER set money = #{money}, point = #{point} where memberrId = #{memberrId}
+		
+	</update>
+	
+	<!-- 주문 재고 차감 -->
+	<update id="deductStock">
+	
+		update mall_book set bookStock = #{bookStock} where bookId = #{bookId}
+	
+	</update>
+	
+	<!-- 주문취소 -->
+	<update id="orderCancle">
+		update mall_order set orderState = '주문취소' where orderId = #{orderId}
+	</update>	
+
+	<!-- 주문 상품 정보(주문취소) -->
+	<select id="getOrderItemInfo" resultType="com.study.model.OrderItemDTO">
+	
+		select * from mall_orderItem
+		where orderId = #{orderId}
+	
+	</select>
+	
+	<!-- 주문 정보(주문 취소) -->
+	<select id="getOrder" resultType="com.study.model.OrderDTO">
+	
+		select * from mall_order
+		where orderId = #{orderId}
+	
+	</select>
+	
+	
+
+  </mapper>
